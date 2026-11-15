@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0f0c" />
+<meta name="description" content="Zombie Frontline: Last Base — pixel art tower defense survival." />
+<title>ZOMBIE FRONTLINE: LAST BASE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div id="app">
+
+  <!-- ============ MAIN MENU ============ -->
+  <section id="screen-menu" class="screen active">
+    <canvas id="menu-canvas" aria-hidden="true"></canvas>
+    <div class="menu-fx fog"></div>
+    <div class="menu-fx scan"></div>
+    <div class="menu-fx vig"></div>
+
+    <div class="menu-layout">
+      <div class="menu-left">
+        <div class="logo-block">
+          <div class="logo-kicker">// MILITARY EMERGENCY BROADCAST //</div>
+          <h1 class="logo">
+            <span class="l1">ZOMBIE</span>
+            <span class="l2">FRONTLINE</span>
+          </h1>
+          <div class="logo-sub"><i></i>LAST BASE<i></i></div>
+        </div>
+
+        <nav class="menu-nav" id="menu-nav">
+          <button class="mbtn" data-action="play"><span class="idx">01</span>PLAY<span class="arw">&#9654;</span></button>
+          <button class="mbtn" data-action="continue"><span class="idx">02</span>CONTINUE<span class="arw">&#9654;</span></button>
+          <button class="mbtn" data-action="newgame"><span class="idx">03</span>NEW GAME<span class="arw">&#9654;</span></button>
+          <button class="mbtn" data-action="maps"><span class="idx">04</span>MAP SELECTION<span class="arw">&#9654;</span></button>
+          <button class="mbtn" data-action="modes"><span class="idx">05</span>GAME MODES<span class="arw">&#9654;</span></button>
+          <button class="mbtn" data-action="settings"><span class="idx">06</span>SETTINGS<span class="arw">&#9654;</span></button>
+          <button class="mbtn" data-action="credits"><span class="idx">07</span>CREDITS<span class="arw">&#9654;</span></button>
+        </nav>
+
+        <div class="menu-foot">
+          <span class="blink-dot"></span> SYSTEM ONLINE &nbsp;|&nbsp; <span id="menu-saveinfo">NO SAVE DATA</span>
+          <span class="ver">v1.0.0</span>
+        </div>
+      </div>
+      <div class="menu-right">
+        <div class="intel">
+          <div class="intel-head">LIVE INTEL FEED</div>
+          <div class="intel-body" id="intel-feed"></div>
+        </div>
+      </div>
+    </div>
+    <div class="menu-corner tl"></div><div class="menu-corner tr"></div>
+    <div class="menu-corner bl"></div><div class="menu-corner br"></div>
+  </section>
+
+  <!-- ============ GAME ============ -->
+  <section id="screen-game" class="screen">
+    <div id="stage">
+
+      <div class="hud-top">
+        <div class="hud-group base-group">
+          <div class="hud-label"><span class="ic">&#9670;</span>BASE INTEGRITY</div>
+          <div class="hpbar base-hp"><div class="hpfill" id="base-hp-fill"></div><div class="hpseg"></div><span class="hptext" id="base-hp-text">100%</span></div>
+        </div>
+        <div class="hud-group res-group">
+          <div class="res" data-res="credits"><span class="ricon credit">C</span><span id="res-credits">0</span></div>
+          <div class="res" data-res="scrap"><span class="ricon scrap">S</span><span id="res-scrap">0</span></div>
+          <div class="res" data-res="research"><span class="ricon research">R</span><span id="res-research">0</span></div>
+        </div>
+        <div class="hud-group wave-group">
+          <div class="wv"><span class="wv-label">STAGE</span><b id="hud-stage">1</b></div>
+          <div class="wv"><span class="wv-label">WAVE</span><b id="hud-wave">1</b></div>
+          <div class="wv hide-sm"><span class="wv-label">HOSTILES</span><b id="hud-left">0</b></div>
+          <div class="wv hide-sm"><span class="wv-label">KILLS</span><b id="hud-kills">0</b></div>
+          <div class="wv hide-sm"><span class="wv-label">TIME</span><b id="hud-time">00:00</b></div>
+        </div>
+        <div class="hud-group ctl-group">
+          <div class="fps" id="fps-counter">60 FPS</div>
+          <div class="speed-ctl">
+            <button class="sbtn" data-speed="0" title="Pause (P)">&#10073;&#10073;</button>
+            <button class="sbtn active" data-speed="1" title="Normal speed">1x</button>
+            <button class="sbtn" data-speed="2" title="Fast">2x</button>
+            <button class="sbtn" data-speed="4" title="Very fast">4x</button>
+          </div>
+          <button class="icon-btn" id="btn-sound" title="Mute / unmute (M)">&#9835;</button>
+          <button class="icon-btn" id="btn-menu" title="Pause menu (ESC)">&#9776;</button>
+        </div>
+      </div>
+
+      <div id="canvas-wrap">
+        <canvas id="game-canvas" width="640" height="384"></canvas>
+        <div class="canvas-frame"></div>
+        <div id="wave-banner" class="wave-banner"></div>
+        <div id="boss-bar" class="boss-bar hidden">
+          <div class="boss-name" id="boss-name">THE ABOMINATION</div>
+          <div class="boss-hp"><div class="boss-fill" id="boss-fill"></div><div class="boss-phases" id="boss-phases"></div></div>
+        </div>
+        <div id="event-callout" class="event-callout"></div>
+        <div id="toast" class="toast-stack"></div>
+        <div id="build-hint" class="build-hint hidden">TAP A GREEN TILE TO DEPLOY</div>
+      </div>
+
+      <div class="hud-bottom" id="hud-bottom">
+        <div class="dock-tabs" id="dock-tabs">
+          <button class="tab active" data-cat="infantry">INFANTRY</button>
+          <button class="tab" data-cat="structure">STRUCTURES</button>
+          <button class="tab" data-cat="special">SPECIAL</button>
+          <button class="tab" data-cat="tech">RESEARCH</button>
+        </div>
+        <div class="dock-scroll" id="dock-scroll">
+          <div class="dock" id="dock"></div>
+        </div>
+        <div class="dock-side">
+          <button class="wave-btn" id="btn-nextwave">
+            <span class="wb-small">CALL NEXT WAVE</span>
+            <span class="wb-big" id="wave-btn-label">WAVE 1</span>
+            <span class="wb-bonus" id="wave-bonus-label">+BONUS</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Inspector -->
+      <div id="inspector" class="inspector hidden">
+        <button class="ins-close" id="ins-close">&#10005;</button>
+        <div class="ins-head">
+          <canvas class="ins-icon" id="ins-icon" width="32" height="32"></canvas>
+          <div>
+            <div class="ins-name" id="ins-name">RIFLEMAN</div>
+            <div class="ins-cat" id="ins-cat">INFANTRY // LV 1</div>
+          </div>
+        </div>
+        <div class="ins-role" id="ins-role"></div>
+        <div class="ins-stats" id="ins-stats"></div>
+        <div class="ins-upgrades" id="ins-upgrades"></div>
+        <div class="ins-actions">
+          <button class="abtn upgrade" id="ins-upgrade">UPGRADE</button>
+          <button class="abtn sell" id="ins-sell">RECYCLE</button>
+        </div>
+      </div>
+
+      <!-- Pause / game over overlay -->
+      <div id="game-overlay" class="game-overlay hidden">
+        <div class="go-panel" id="go-panel"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MODAL ============ -->
+  <div id="modal-root" class="modal-root hidden">
+    <div class="modal-backdrop"></div>
+    <div class="modal" id="modal">
+      <div class="modal-head">
+        <div class="modal-title" id="modal-title">TITLE</div>
+        <button class="modal-close" id="modal-close">&#10005;</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <div id="tooltip" class="tooltip hidden"></div>
+  <div id="orientation-hint" class="orientation-hint hidden">
+    <div class="oh-icon">&#8635;</div>
+    <div>ROTATE DEVICE<br /><span>for the full battlefield view</span></div>
+  </div>
+  <div id="boot" class="boot">
+    <div class="boot-inner">
+      <div class="boot-logo">ZOMBIE FRONTLINE</div>
+      <div class="boot-bar"><div class="boot-fill"></div></div>
+      <div class="boot-text">INITIALIZING LAST BASE...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ENGINE / CORE ============ -->
+<script src="js/core/util.js"></script>
+<script src="js/core/settings.js"></script>
+<script src="js/core/save.js"></script>
+<script src="js/core/audio.js"></script>
+<script src="js/core/input.js"></script>
+<!-- ============ RENDER ============ -->
+<script src="js/render/sprites.js"></script>
+<script src="js/render/terrain.js"></script>
+<script src="js/render/fx.js"></script>
+<!-- ============ DATA ============ -->
+<script src="js/data/units.js"></script>
+<script src="js/data/zombies.js"></script>
+<script src="js/data/maps.js"></script>
+<script src="js/data/research.js"></script>
+<!-- ============ GAMEPLAY ============ -->
+<script src="js/game/path.js"></script>
+<script src="js/game/waves.js"></script>
+<script src="js/game/towers.js"></script>
+<script src="js/game/enemies.js"></script>
+<script src="js/game/game.js"></script>
+<!-- ============ UI ============ -->
+<script src="js/ui/hud.js"></script>
+<script src="js/ui/menu.js"></script>
+<script src="js/ui/panels.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
